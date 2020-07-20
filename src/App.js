@@ -1,32 +1,99 @@
-import React from "react";
-import "./App.scss";
+import React, { useState } from 'react';
+import './App.scss';
+import buttons from './data/buttons';
+import CalculatorButton from './components/CalculatorButton';
 
 function App() {
+  const [arg1, setArg1] = useState('0');
+  const [operator, setOperator] = useState('');
+  const [clearDisplay, setClearDisplay] = useState(false);
+  const [displayValue, setDisplayValue] = useState('0');
+
+  const onCalcBtnClick = (btnValue) => {
+    switch (btnValue) {
+      case '0':
+        if (displayValue === '0') {
+          return;
+        }
+      // eslint-disable-next-line
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        if (displayValue === '0' || clearDisplay) {
+          setDisplayValue(btnValue);
+          if (clearDisplay) {
+            setClearDisplay(false);
+          }
+        } else {
+          setDisplayValue(displayValue + btnValue);
+        }
+        break;
+      case 'AC':
+        setArg1('');
+        setOperator('');
+        setDisplayValue('0');
+        break;
+      case '+/-':
+        setDisplayValue(String(displayValue * -1));
+        break;
+      case '%':
+        setDisplayValue(String(displayValue * 0.01));
+        break;
+      case '.':
+        if (displayValue.includes('.')) {
+          return;
+        }
+        setDisplayValue(displayValue + '.');
+        break;
+      case '÷':
+        setArg1(displayValue);
+        setOperator('/');
+        setClearDisplay(true);
+        break;
+      case 'x':
+        setArg1(displayValue);
+        setOperator('*');
+        setClearDisplay(true);
+        break;
+      case '-':
+        setArg1(displayValue);
+        setOperator('-');
+        setClearDisplay(true);
+        break;
+      case '+':
+        setArg1(displayValue);
+        setOperator('+');
+        setClearDisplay(true);
+        break;
+      case '=':
+        // eslint-disable-next-line
+        setDisplayValue(String(eval(`${arg1}${operator}${displayValue}`)));
+        setClearDisplay(true);
+        break;
+      default:
+        console.error('how?');
+    }
+  };
+
   return (
     <div className="App">
       <section className="display-area">
-        <span>0</span>
+        <span>{displayValue}</span>
       </section>
       <section className="buttons">
-        <input type="button" className="calc-btn" value="AC" onClick={() => window.alert('AC')} />
-        <input type="button" className="calc-btn" value="+/-" onClick={() => window.alert('+/-')} />
-        <input type="button" className="calc-btn" value="%" onClick={() => window.alert('%')} />
-        <input type="button" className="calc-btn calc-btn--operator" value="÷" onClick={() => window.alert('÷')} />
-        <input type="button" className="calc-btn" value="7" onClick={() => window.alert('7')} />
-        <input type="button" className="calc-btn" value="8" onClick={() => window.alert('8')} />
-        <input type="button" className="calc-btn" value="9" onClick={() => window.alert('9')} />
-        <input type="button" className="calc-btn calc-btn--operator" value="X" onClick={() => window.alert('X')} />
-        <input type="button" className="calc-btn" value="4" onClick={() => window.alert('4')} />
-        <input type="button" className="calc-btn" value="5" onClick={() => window.alert('5')} />
-        <input type="button" className="calc-btn" value="6" onClick={() => window.alert('6')} />
-        <input type="button" className="calc-btn calc-btn--operator" value="-" onClick={() => window.alert('-')} />
-        <input type="button" className="calc-btn" value="1" onClick={() => window.alert('1')} />
-        <input type="button" className="calc-btn" value="2" onClick={() => window.alert('2')} />
-        <input type="button" className="calc-btn" value="3" onClick={() => window.alert('3')} />
-        <input type="button" className="calc-btn calc-btn--operator" value="+" onClick={() => window.alert('+')} />
-        <input type="button" className="calc-btn" value="0" onClick={() => window.alert('0')} />
-        <input type="button" className="calc-btn calc-btn--annoying-period" value="." onClick={() => window.alert('.')} />
-        <input type="button" className="calc-btn calc-btn--operator" value="=" onClick={() => window.alert('=')} />
+        {buttons.map(({ value: btnValue, type }) => (
+          <CalculatorButton
+            buttonValue={btnValue}
+            buttonType={type}
+            handleClick={onCalcBtnClick}
+          />
+        ))}
       </section>
     </div>
   );
